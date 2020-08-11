@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms'
 import { HttpClientModule  } from '@angular/common/http' 
 
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthComponent } from './auth/auth.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
@@ -23,11 +24,7 @@ import { AuthGuard } from './auth/auth-guard.service';
     BrowserModule,
     FormsModule,
     HttpClientModule,
-    RouterModule.forRoot([
-      {path: '', component: HomeComponent, canActivate: [AuthGuard]},
-      {path: 'auth', component: AuthComponent},
-      {path: '**', redirectTo: '/'}
-    ]),
+    AppRoutingModule
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent]
