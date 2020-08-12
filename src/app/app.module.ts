@@ -11,6 +11,7 @@ import { HeaderComponent } from './header/header.component';
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './guards/auth.guard';
 import { LayoutComponent } from './layout/layout.component';
+import { OrderService } from './orders/order.service';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,7 @@ import { LayoutComponent } from './layout/layout.component';
     HttpClientModule,
     AppRoutingModule
   ],
-  providers: [AuthGuard],
+  providers: [AuthGuard, OrderService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
