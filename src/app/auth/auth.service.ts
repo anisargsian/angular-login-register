@@ -1,35 +1,26 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
-import { throwError, BehaviorSubject } from 'rxjs';
-import { User } from './user.model';
+import { throwError, BehaviorSubject, Observable } from 'rxjs';
+import { User } from '../models/user.model';
 import { Router } from '@angular/router';
-
-export interface AuthResponseData {
-  kind: string;
-  idToken: string;
-  email: string;
-  refreshToken: string;
-  expiresIn: string;
-  localId: string;
-  registered?: boolean;
-}
+import { AuthResponseData } from '../models/auth';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   user = new BehaviorSubject<User>(null);
-  
+
   private tokenExpirationTimer: any;
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  signup(email: string, password: string) {
+  authenticate(email: string, password: string, url: string): Observable<AuthResponseData> {
     return this.http
       .post<AuthResponseData>(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDWAhtf8RIeuF79gDrYh7YTbAbygUyZg-Q',
+        url,
         {
-          email: email,
-          password: password,
+          email,
+          password,
           returnSecureToken: true,
         }
       )
@@ -40,7 +31,7 @@ export class AuthService {
             resData.email,
             resData.localId,
             resData.idToken,
-            +resData.expiresIn
+            Number(resData.expiresIn)
           );
         })
       );
@@ -51,7 +42,7 @@ export class AuthService {
     userId: string,
     idToken: string,
     expiresIn: number
-  ) {
+  ): void {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new User(email, userId, idToken, expirationDate);
     this.user.next(user);
@@ -59,7 +50,7 @@ export class AuthService {
     localStorage.setItem('userData', JSON.stringify(user));
   }
 
-  autoLogin() {
+  autoLogin(): void {
     const userData: {
       email: string;
       id: string;
@@ -79,41 +70,18 @@ export class AuthService {
 
     if (loadedUser.token) {
       this.user.next(loadedUser);
-      const expirtionDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime()
+      const expirtionDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
       this.autoLogout(expirtionDuration);
     }
   }
 
-  autoLogout(expirationDuration: number) {
+  autoLogout(expirationDuration: number): void {
     this.tokenExpirationTimer = setTimeout(() => {
-      this.logout()
+      this.logout();
     }, expirationDuration);
   }
 
-  login(email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDWAhtf8RIeuF79gDrYh7YTbAbygUyZg-Q',
-        {
-          email: email,
-          password: password,
-          returnSecureToken: true,
-        }
-      )
-      .pipe(
-        catchError(this.handleError),
-        tap((resData) => {
-          this.handleAuthentication(
-            resData.email,
-            resData.localId,
-            resData.idToken,
-            +resData.expiresIn
-          );
-        })
-      );
-  }
-
-  logout() {
+  logout(): void {
     this.user.next(null);
     this.router.navigate(['/auth']);
     localStorage.removeItem('userData');
@@ -123,7 +91,7 @@ export class AuthService {
     this.tokenExpirationTimer = null;
   }
 
-  private handleError(errorRes: HttpErrorResponse) {
+  private handleError(errorRes: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unknon error occured!';
     if (!errorRes.error || !errorRes.error.error) {
       return throwError(errorMessage);
