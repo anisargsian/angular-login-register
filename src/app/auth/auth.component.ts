@@ -21,6 +21,10 @@ export class AuthComponent implements OnInit {
 
   constructor(private authService: AuthService, private router: Router) { }
 
+  public get AuthMode(): {Login: string, Signup: string} {
+    return AuthMode;
+  }
+
   onSwitchMode(): void {
     this.authMode = this.authMode === AuthMode.Login ? AuthMode.Signup : AuthMode.Login;
   }

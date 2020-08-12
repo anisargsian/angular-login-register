@@ -34,9 +34,9 @@
         </div>
         <div>
           <button type="submit" class="btn btn-primary" [disabled]="!authForm.valid">
-            {{ authMode === 'Login' ? 'Login' : 'Sign Up' }}
+            {{ authMode === AuthMode.Login ? 'Login' : 'Sign Up' }}
           </button> |
-          <button type="button" class="btn btn-primary" (click)="onSwitchMode()">Switch to {{ authMode === 'Login' ? 'Sign Up' : 'Login' }}</button>
+          <button type="button" class="btn btn-primary" (click)="onSwitchMode()">Switch to {{ authMode === AuthMode.Login ? 'Sign Up' : 'Login' }}</button>
         </div>
       </form>
     </div>
