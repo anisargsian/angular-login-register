@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
@@ -16,6 +16,7 @@ export class AuthComponent implements OnInit {
   authMode: AuthMode = AuthMode.Login;
   isLoading = false;
   error: string = null;
+  authForm: FormGroup;
 
   constructor(private authService: AuthService, private router: Router) { }
 
@@ -27,14 +28,14 @@ export class AuthComponent implements OnInit {
     this.authMode = this.authMode === AuthMode.Login ? AuthMode.Signup : AuthMode.Login;
   }
 
-  onSubmit(form: NgForm): void {
-    if (!form.valid) {
+  onSubmit(): void {
+    if (!this.authForm.valid) {
       return;
     }
 
     this.isLoading = true;
 
-    const value = form.value;
+    const value = this.authForm.value;
     const url: string = this.authMode === AuthMode.Login ? AuthUrl.LoginUrl : AuthUrl.SignupUrl;
     this.authService.authenticate(value.email, value.password, url).subscribe(
       resData => {
@@ -47,11 +48,15 @@ export class AuthComponent implements OnInit {
       }
     );
 
-    form.reset();
+    this.authForm.reset();
   }
 
 
   ngOnInit(): void {
+    this.authForm = new FormGroup({
+      email: new FormControl(null, [Validators.required, Validators.email]),
+      password: new FormControl(null, [Validators.required, Validators.minLength(6)])
+    });
   }
 
 }
