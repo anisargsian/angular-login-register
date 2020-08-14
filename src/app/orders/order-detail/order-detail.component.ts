@@ -13,7 +13,6 @@ export class OrderDetailComponent implements OnInit {
   id: number;
 
   constructor(
-    private router: Router,
     private route: ActivatedRoute,
     private orderService: OrderService
   ) {}
@@ -22,7 +21,14 @@ export class OrderDetailComponent implements OnInit {
     this.route.params.subscribe(
       (params: Params) => {
         this.id = Number(params.id);
-        this.order = this.orderService.getOrder(this.id);
+        if (this.orderService.orders.getValue().length === 0) {
+          this.orderService.fetchOrders().subscribe(res => {
+            this.orderService.orders.next(res);
+            this.order = this.orderService.getOrder(this.id);
+          });
+        } else {
+          this.order = this.orderService.getOrder(this.id);
+        }
       }
     );
   }

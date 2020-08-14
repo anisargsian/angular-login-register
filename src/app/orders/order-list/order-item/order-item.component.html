@@ -1,12 +1,17 @@
-<a
-  [routerLink]="[id]"
-  routerLinkActive="active"
-  class="list-group-item clearfix"
->
-  <div class="pull-left">
-    <h4 class="list-group-item-heading">
-      {{ order.name }}
-    </h4>
-    <p class="list-group-item-text">{{ order.description }}</p>
-  </div>
-</a>
+<div class="col-md-10">
+  <a
+    [routerLink]="[id]"
+    routerLinkActive="active"
+    class="list-group-item clearfix"
+  >
+    <div class="pull-left">
+      <h4 class="list-group-item-heading">
+        {{ order.name }}
+      </h4>
+      <p class="list-group-item-text">{{ order.description }}</p>
+    </div>
+  </a>
+</div>
+<div class="col-md-2">
+  <button class="btn btn-danger" type="button" (click)="onDeleteOrder(order.id)">X</button>
+</div>

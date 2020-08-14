@@ -1,29 +1,40 @@
 import { Order } from '../models/order';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { DBEndpoints } from '../enums/db-endpoints';
 
 @Injectable()
 export class OrderService {
-  ordersChanges = new Subject<Order[]>();
-  private orders: Order[] = [];
+  orders =  new BehaviorSubject<Order[]>([]);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
-  fetchOrders(): void {
-    this.http
-      .get<Order[]>('https://ng-course-login-register.firebaseio.com/orders.json')
-      .subscribe(res => {
-        this.orders = res;
-        this.ordersChanges.next([...this.orders]);
-      });
-  }
-
-  getOrders(): Order[] {
-    return [...this.orders];
+  fetchOrders(): Observable<Order[]> {
+    return this.http
+      .get<Order[]>(DBEndpoints.Orders);
   }
 
   getOrder(id: number): Order {
-    return this.orders.find(order => order.id === id);
+    return this.orders.getValue().find(order => order.id === id);
+  }
+
+  updateOrders(orders: Order[]): void {
+    this.http.put(
+      DBEndpoints.Orders,
+      orders
+    ).subscribe((res: Order[]) => {
+      this.orders.next(res);
+    },
+    err => {
+      console.log('error creating order', + err);
+    }
+    );
+  }
+
+  deleteOrder(id: number): void {
+    const orders = this.orders.getValue().filter(order => order.id !== id);
+    this.updateOrders(orders);
   }
 }

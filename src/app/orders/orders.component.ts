@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { OrderService } from './order.service';
 
 @Component({
@@ -7,11 +7,14 @@ import { OrderService } from './order.service';
   styleUrls: ['./orders.component.css']
 })
 export class OrdersComponent implements OnInit {
-
   constructor(private orderService: OrderService) { }
 
   ngOnInit(): void {
-    this.orderService.fetchOrders();
+    this.orderService.fetchOrders().subscribe(
+      res => {
+        this.orderService.orders.next(res);
+      }
+    );
   }
 
 }

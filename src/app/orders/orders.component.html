@@ -1,6 +1,11 @@
 <div class="row">
   <div class="col-md-5">
-    <app-order-list></app-order-list>
+    <div class="col-md-12" style="padding-bottom: 15px;">
+      <a [routerLink]="'new'"><button  class="btn btn-primary">New Order</button></a>
+    </div>
+    <div class="col-md-12">
+      <app-order-list></app-order-list>
+    </div>
   </div>
   <div class="col-md-7">
     <router-outlet></router-outlet>
