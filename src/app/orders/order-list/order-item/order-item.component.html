@@ -1,4 +1,4 @@
-<div class="col-md-10">
+<div class="col-md-8">
   <a
     [routerLink]="[id]"
     routerLinkActive="active"
@@ -12,6 +12,10 @@
     </div>
   </a>
 </div>
-<div class="col-md-2">
-  <button class="btn btn-danger" type="button" (click)="onDeleteOrder(order.id)">X</button>
+<div class="col-md-4">
+  <div class="button-group">
+    <button class="btn btn-danger" type="button" (click)="onDeleteOrder(order.id)">X</button>
+    <button class="btn btn-primary" type="button" [routerLink]="[id] + '/edit'">Edit</button>
+  </div>
 </div>
+
